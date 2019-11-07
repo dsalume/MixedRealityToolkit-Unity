@@ -361,9 +361,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
         #region IMixedRealityEventSystem Implementation
 
         /// <inheritdoc />
-        public override void HandleEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler)
+        public override void HandleEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler, bool alwaysFire = false)
         {
-            if (disabledRefCount > 0)
+            bool isInputDisabled = disabledRefCount > 0;
+            if (!alwaysFire && isInputDisabled)
             {
                 return;
             }
@@ -549,7 +550,16 @@ namespace Microsoft.MixedReality.Toolkit.Input
             // If event was not handled by modal, pass it on to the current focused object
             if (focusedObject != null)
             {
-                ExecuteEvents.ExecuteHierarchy(focusedObject, baseInputEventData, eventHandler);
+                GameObject objectHandler = null;
+                GameObject root = focusedObject;
+                do
+                {
+                    objectHandler = ExecuteEvents.ExecuteHierarchy(root, baseInputEventData, eventHandler);
+                    if (objectHandler != null)
+                    {
+                        root = objectHandler.transform.parent?.gameObject;
+                    }
+                } while (objectHandler != null && root != null && !baseInputEventData.used);
             }
             return modalEventHandled;
         }
@@ -748,7 +758,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             FocusProvider?.OnSourceDetected(sourceStateEventData);
 
             // Pass handler through HandleEvent to perform modal/fallback logic
-            HandleEvent(sourceStateEventData, OnSourceDetectedEventHandler);
+            HandleEvent(sourceStateEventData, OnSourceDetectedEventHandler, alwaysFire: true);
         }
 
         private static readonly ExecuteEvents.EventFunction<IMixedRealitySourceStateHandler> OnSourceDetectedEventHandler =
@@ -775,7 +785,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             // Pass handler through HandleEvent to perform modal/fallback logic
             // Events have to be handled before FocusProvider.OnSourceLost since they won't be passed on without a focused object
-            HandleEvent(sourceStateEventData, OnSourceLostEventHandler);
+            HandleEvent(sourceStateEventData, OnSourceLostEventHandler, alwaysFire: true);
 
             FocusProvider?.OnSourceLost(sourceStateEventData);
         }
