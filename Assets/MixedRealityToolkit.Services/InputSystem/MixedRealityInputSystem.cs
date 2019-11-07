@@ -361,7 +361,12 @@ namespace Microsoft.MixedReality.Toolkit.Input
         #region IMixedRealityEventSystem Implementation
 
         /// <inheritdoc />
-        public override void HandleEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler, bool alwaysFire = false)
+        public override void HandleEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler)
+        {
+            HandleEvent<T>(eventData, eventHandler, alwaysFire: false);
+        }
+
+        public void HandleEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler, bool alwaysFire) where T : IEventSystemHandler
         {
             bool isInputDisabled = disabledRefCount > 0;
             if (!alwaysFire && isInputDisabled)
