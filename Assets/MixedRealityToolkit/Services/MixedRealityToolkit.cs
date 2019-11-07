@@ -227,8 +227,8 @@ namespace Microsoft.MixedReality.Toolkit
 
             if (IsInitialized)
             {
-                serviceInstance.Disable();
-                serviceInstance.Destroy();
+                serviceInstance?.Disable();
+                serviceInstance?.Destroy();
             }
 
             if (IsCoreSystem(interfaceType))
@@ -432,44 +432,22 @@ namespace Microsoft.MixedReality.Toolkit
         {
             // There's lots of documented cases that if the camera doesn't start at 0,0,0, things break with the WMR SDK specifically.
             // We'll enforce that here, then tracking can update it to the appropriate position later.
-            CameraCache.Main.transform.position = Vector3.zero;
+            if (CameraCache.Main != null)
+            {
+                CameraCache.Main.transform.position = Vector3.zero;
+            }
 
             // This will create the playspace
             Transform playspace = MixedRealityPlayspace.Transform;
 
-            bool addedComponents = false;
             if (!Application.isPlaying)
             {
                 var eventSystems = FindObjectsOfType<EventSystem>();
 
-                if (eventSystems.Length == 0)
+                if (eventSystems.Length != 1)
                 {
-                    CameraCache.Main.gameObject.EnsureComponent<EventSystem>();
-                    addedComponents = true;
+                    Debug.LogError("One event system must be in the scene.");
                 }
-                else
-                {
-                    bool raiseWarning;
-
-                    if (eventSystems.Length == 1)
-                    {
-                        raiseWarning = eventSystems[0].gameObject != CameraCache.Main.gameObject;
-                    }
-                    else
-                    {
-                        raiseWarning = true;
-                    }
-
-                    if (raiseWarning)
-                    {
-                        Debug.LogWarning("Found an existing event system in your scene. The Mixed Reality Toolkit requires only one, and must be found on the main camera.");
-                    }
-                }
-            }
-
-            if (!addedComponents)
-            {
-                CameraCache.Main.gameObject.EnsureComponent<EventSystem>();
             }
         }
 
@@ -1338,7 +1316,7 @@ namespace Microsoft.MixedReality.Toolkit
                             break;
                     }
                 };
-
+                
                 EditorApplication.hierarchyChanged += () =>
                 {
                     // These checks are only necessary in edit mode
@@ -1353,13 +1331,6 @@ namespace Microsoft.MixedReality.Toolkit
                                 toolkitInstances.RemoveAt(i);
                             }
                         }
-
-                        // If the active instance is null, it may not have been set, or it may have been deleted.
-                        if (activeInstance == null)
-                        {
-                            // Do a search for a new active instance
-                            MixedRealityToolkit instanceCheck = Instance;
-                        }
                     }
 
                     for (int i = toolkitInstances.Count - 1; i >= 0; i--)
@@ -1369,24 +1340,6 @@ namespace Microsoft.MixedReality.Toolkit
                     }
                 };
             }
-        }
-
-        /// <summary>
-        /// Used to register newly created instances in edit mode.
-        /// Initially handled by using ExecuteAlways, but this attribute causes the instance to be destroyed as we enter play mode, which is disruptive to services.
-        /// </summary>
-        private void OnValidate()
-        {
-            // This check is only necessary in edit mode. This can also get called during player builds as well,
-            // and shouldn't be run during that time.
-            if (EditorApplication.isPlayingOrWillChangePlaymode ||
-                EditorApplication.isCompiling ||
-                BuildPipeline.isBuildingPlayer)
-            {
-                return;
-            }
-
-            RegisterInstance(this);
         }
 #endif // UNITY_EDITOR
 

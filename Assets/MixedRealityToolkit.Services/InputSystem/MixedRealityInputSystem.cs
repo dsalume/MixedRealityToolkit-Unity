@@ -154,7 +154,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             if (inputModules.Length == 0)
             {
                 // There is no input module attached to the camera, add one.
-                CameraCache.Main.gameObject.AddComponent<MixedRealityInputModule>();
+                CameraCache.Main?.gameObject.AddComponent<MixedRealityInputModule>();
                 isInputModuleAdded = true;
             }
             else if ((inputModules.Length == 1) && (inputModules[0] is MixedRealityInputModule))
@@ -221,7 +221,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             if (pointerProfile?.GazeProviderType?.Type != null)
             {
-                GazeProvider = CameraCache.Main.gameObject.EnsureComponent(pointerProfile.GazeProviderType.Type) as IMixedRealityGazeProvider;
+                GazeProvider = CameraCache.Main?.gameObject.EnsureComponent(pointerProfile.GazeProviderType.Type) as IMixedRealityGazeProvider;
                 GazeProvider.GazeCursorPrefab = pointerProfile.GazeCursorPrefab;
                 // Current implementation implements both provider types in one concrete class.
                 EyeGazeProvider = GazeProvider as IMixedRealityEyeGazeProvider;
@@ -313,7 +313,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             if (isInputModuleAdded)
             {
-                var inputModule = CameraCache.Main.gameObject.GetComponent<MixedRealityInputModule>();
+                var inputModule = CameraCache.Main?.gameObject.GetComponent<MixedRealityInputModule>();
                 if (inputModule)
                 {
                     if (Application.isPlaying)
@@ -535,21 +535,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
                 if (modalInput != null)
                 {
-                    // If there is a focused object in the hierarchy of the modal handler, start the event bubble there
-                    if (focusedObject != null && focusedObject.transform.IsChildOf(modalInput.transform))
+                    if (ExecuteEvents.ExecuteHierarchy(modalInput, baseInputEventData, eventHandler) && baseInputEventData.used)
                     {
-                        if (ExecuteEvents.ExecuteHierarchy(focusedObject, baseInputEventData, eventHandler) && baseInputEventData.used)
-                        {
-                            return true;
-                        }
-                    }
-                    // Otherwise, just invoke the event on the modal handler itself
-                    else
-                    {
-                        if (ExecuteEvents.ExecuteHierarchy(modalInput, baseInputEventData, eventHandler) && baseInputEventData.used)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
                 else

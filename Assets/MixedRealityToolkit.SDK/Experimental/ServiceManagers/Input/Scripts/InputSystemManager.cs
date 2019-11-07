@@ -70,9 +70,9 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Input
 
             EventSystem[] eventSystems = FindObjectsOfType<EventSystem>();
 
-            if (eventSystems.Length == 0)
+            if (eventSystems.Length != 1)
             {
-                CameraCache.Main.gameObject.EnsureComponent<EventSystem>();
+                Debug.LogError("One event system must be in the scene.");
             }
 
         }
