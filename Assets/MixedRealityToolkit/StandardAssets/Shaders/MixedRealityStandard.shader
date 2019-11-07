@@ -33,7 +33,8 @@ Shader "Mixed Reality Toolkit/Standard"
         _RefractiveIndex("Refractive Index", Range(0.0, 3.0)) = 0.0
         [Toggle(_RIM_LIGHT)] _RimLight("Rim Light", Float) = 0.0
         _RimColor("Rim Color", Color) = (0.5, 0.5, 0.5, 1.0)
-        _RimPower("Rim Power", Range(0.0, 8.0)) = 0.25
+		_RimPower("Rim Power", Range(0.0, 8.0)) = 0.25
+		_RimIntensity("Rim Intensity", Range(0.0, 2.0)) = 1
         [Toggle(_VERTEX_COLORS)] _VertexColors("Vertex Colors", Float) = 0.0
         [Toggle(_VERTEX_EXTRUSION)] _VertexExtrusion("Vertex Extrusion", Float) = 0.0
         _VertexExtrusionValue("Vertex Extrusion Value", Float) = 0.0
@@ -71,6 +72,7 @@ Shader "Mixed Reality Toolkit/Standard"
         _BorderMinValue("Border Min Value", Range(0.0, 1.0)) = 0.1
         _EdgeSmoothingValue("Edge Smoothing Value", Range(0.0, 0.2)) = 0.002
         _BorderLightOpaqueAlpha("Border Light Opaque Alpha", Range(0.0, 1.0)) = 1.0
+		_BorderLightColor("Border Light Color", Color) = (1.0, 1.0, 1.0, 1.0)
         [Toggle(_INNER_GLOW)] _InnerGlow("Inner Glow", Float) = 0.0
         _InnerGlowColor("Inner Glow Color (RGB) and Intensity (A)", Color) = (1.0, 1.0, 1.0, 0.75)
         _InnerGlowPower("Inner Glow Power", Range(2.0, 32.0)) = 4.0
@@ -220,6 +222,7 @@ Shader "Mixed Reality Toolkit/Standard"
             #pragma multi_compile _ _CLIPPING_PLANE
             #pragma multi_compile _ _CLIPPING_SPHERE
             #pragma multi_compile _ _CLIPPING_BOX
+			#pragma multi_compile _ _RIM_LIGHT
 
             #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON
             #pragma shader_feature _DISABLE_ALBEDO_MAP
@@ -234,7 +237,6 @@ Shader "Mixed Reality Toolkit/Standard"
             #pragma shader_feature _SPHERICAL_HARMONICS
             #pragma shader_feature _REFLECTIONS
             #pragma shader_feature _REFRACTION
-            #pragma shader_feature _RIM_LIGHT
             #pragma shader_feature _VERTEX_COLORS
             #pragma shader_feature _VERTEX_EXTRUSION
             #pragma shader_feature _VERTEX_EXTRUSION_SMOOTH_NORMALS
@@ -321,6 +323,14 @@ Shader "Mixed Reality Toolkit/Standard"
 #else
             #undef _UV
 #endif
+
+// WORKAROUND: This is a workaround for https://github.com/microsoft/MixedRealityToolkit-Unity/issues/5844
+#if defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE) 
+			#undef _VFACE_SUPPORTED
+#else
+			#define _VFACE_SUPPORTED
+#endif
+
 
             struct appdata_t
             {
@@ -445,7 +455,8 @@ Shader "Mixed Reality Toolkit/Standard"
 
 #if defined(_RIM_LIGHT)
             fixed3 _RimColor;
-            fixed _RimPower;
+			fixed _RimPower;
+			fixed _RimIntensity;
 #endif
 
 #if defined(_VERTEX_EXTRUSION)
@@ -519,6 +530,7 @@ Shader "Mixed Reality Toolkit/Standard"
 #if defined(_BORDER_LIGHT)
             fixed _BorderWidth;
             fixed _BorderMinValue;
+			fixed4 _BorderLightColor;
 #endif
 
 #if defined(_BORDER_LIGHT_OPAQUE)
@@ -849,7 +861,11 @@ Shader "Mixed Reality Toolkit/Standard"
 #if defined(SHADER_API_D3D11) && !defined(_ALPHA_CLIP) && !defined(_TRANSPARENT)
             [earlydepthstencil]
 #endif
-            fixed4 frag(v2f i, fixed facing : VFACE) : SV_Target
+            fixed4 frag(v2f i
+#if defined(_VFACE_SUPPORTED)
+				, fixed facing : VFACE
+#endif
+			) : SV_Target
             {
 #if defined(_INSTANCED_COLOR)
                 UNITY_SETUP_INSTANCE_ID(i);
@@ -982,10 +998,18 @@ Shader "Mixed Reality Toolkit/Standard"
                 worldNormal.x = dot(i.tangentX, tangentNormal);
                 worldNormal.y = dot(i.tangentY, tangentNormal);
                 worldNormal.z = dot(i.tangentZ, tangentNormal);
-                worldNormal = normalize(worldNormal) * facing;
+#if defined(_VFACE_SUPPORTED)
+				worldNormal = normalize(worldNormal) * facing;
+#else
+				worldNormal = normalize(worldNormal);
+#endif
 #endif
 #else
-                worldNormal = normalize(i.worldNormal) * facing;
+#if defined(_VFACE_SUPPORTED)
+				worldNormal = normalize(i.worldNormal) * facing;
+#else
+				worldNormal = normalize(i.worldNormal);
+#endif
 #endif
 #endif
 
@@ -1052,7 +1076,7 @@ Shader "Mixed Reality Toolkit/Standard"
 #if defined(_HOVER_LIGHT) && defined(_BORDER_LIGHT_USES_HOVER_COLOR) && defined(_HOVER_COLOR_OVERRIDE)
                 fixed3 borderColor = _HoverColorOverride.rgb;
 #else
-                fixed3 borderColor = fixed3(1.0, 1.0, 1.0);
+                fixed3 borderColor = _BorderLightColor;
 #endif
                 fixed3 borderContribution = borderColor * borderValue * _BorderMinValue * _FluentLightIntensity;
 #if defined(_BORDER_LIGHT_REPLACES_ALBEDO)
@@ -1093,8 +1117,8 @@ Shader "Mixed Reality Toolkit/Standard"
 #endif
                 fixed diffuse = max(0.0, dot(worldNormal, directionalLightDirection));
 #if defined(_SPECULAR_HIGHLIGHTS)
-                fixed halfVector = max(0.0, dot(worldNormal, normalize(directionalLightDirection + worldViewDir)));
-                fixed specular = saturate(pow(halfVector, _Shininess * pow(_Smoothness, 4.0)) * (_Smoothness * 2.0) * _Metallic);
+				fixed halfVector = max(0.0, dot(worldNormal, normalize(directionalLightDirection + worldViewDir)));
+				fixed specular = saturate(pow(halfVector, _Shininess) * _Smoothness * 2.0);
 #else
                 fixed specular = 0.0;
 #endif
@@ -1117,7 +1141,7 @@ Shader "Mixed Reality Toolkit/Standard"
 #if defined(_FRESNEL)
                 fixed fresnel = 1.0 - saturate(abs(dot(worldViewDir, worldNormal)));
 #if defined(_RIM_LIGHT)
-                fixed3 fresnelColor = _RimColor * pow(fresnel, _RimPower);
+                fixed3 fresnelColor = _RimIntensity * _RimColor * pow(fresnel, _RimPower);
 #else
                 fixed3 fresnelColor = unity_IndirectSpecColor.rgb * (pow(fresnel, _FresnelPower) * max(_Smoothness, 0.5));
 #endif

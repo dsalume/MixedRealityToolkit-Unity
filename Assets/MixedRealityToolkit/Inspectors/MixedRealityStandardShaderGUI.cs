@@ -63,6 +63,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             public static GUIContent rimLight = new GUIContent("Rim Light", "Enable Rim (Fresnel) Lighting");
             public static GUIContent rimColor = new GUIContent("Color", "Rim Highlight Color");
             public static GUIContent rimPower = new GUIContent("Power", "Rim Highlight Saturation");
+            public static GUIContent rimIntensity = new GUIContent("Intensity", "Rim Highlight Intensity");
             public static GUIContent vertexColors = new GUIContent("Vertex Colors", "Enable Vertex Color Tinting");
             public static GUIContent vertexExtrusion = new GUIContent("Vertex Extrusion", "Enable Vertex Extrusion Along the Vertex Normal");
             public static GUIContent vertexExtrusionValue = new GUIContent("Extrusion Value", "How Far to Extrude the Vertex Along the Vertex Normal");
@@ -98,6 +99,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             public static GUIContent borderMinValue = new GUIContent("Brightness", "Brightness Scaler");
             public static GUIContent edgeSmoothingValue = new GUIContent("Edge Smoothing Value", "Smooths Edges When Round Corners and Transparency Is Enabled");
             public static GUIContent borderLightOpaqueAlpha = new GUIContent("Alpha", "Alpha value of \"opaque\" borders.");
+            public static GUIContent borderLightColor = new GUIContent("Border Light Color", "Border Light Color.");
             public static GUIContent innerGlow = new GUIContent("Inner Glow", "Enable Inner Glow (Assumes UVs Specify Borders of Surface, Works Best on Unity Cube, Quad, and Plane)");
             public static GUIContent innerGlowColor = new GUIContent("Color", "Inner Glow Color (RGB) and Intensity (A)");
             public static GUIContent innerGlowPower = new GUIContent("Power", "Power Exponent to Control Glow");
@@ -146,6 +148,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         protected MaterialProperty rimLight;
         protected MaterialProperty rimColor;
         protected MaterialProperty rimPower;
+        protected MaterialProperty rimIntensity;
         protected MaterialProperty vertexColors;
         protected MaterialProperty vertexExtrusion;
         protected MaterialProperty vertexExtrusionValue;
@@ -181,6 +184,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         protected MaterialProperty borderMinValue;
         protected MaterialProperty edgeSmoothingValue;
         protected MaterialProperty borderLightOpaqueAlpha;
+        protected MaterialProperty borderLightColor;
         protected MaterialProperty innerGlow;
         protected MaterialProperty innerGlowColor;
         protected MaterialProperty innerGlowPower;
@@ -232,6 +236,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             rimLight = FindProperty("_RimLight", props);
             rimColor = FindProperty("_RimColor", props);
             rimPower = FindProperty("_RimPower", props);
+            rimIntensity = FindProperty("_RimIntensity", props);
             vertexColors = FindProperty("_VertexColors", props);
             vertexExtrusion = FindProperty("_VertexExtrusion", props);
             vertexExtrusionValue = FindProperty("_VertexExtrusionValue", props);
@@ -267,6 +272,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             borderMinValue = FindProperty("_BorderMinValue", props);
             edgeSmoothingValue = FindProperty("_EdgeSmoothingValue", props);
             borderLightOpaqueAlpha = FindProperty("_BorderLightOpaqueAlpha", props);
+            borderLightColor = FindProperty("_BorderLightColor", props);
             innerGlow = FindProperty("_InnerGlow", props);
             innerGlowColor = FindProperty("_InnerGlowColor", props);
             innerGlowPower = FindProperty("_InnerGlowPower", props);
@@ -500,6 +506,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             {
                 materialEditor.ShaderProperty(rimColor, Styles.rimColor, 2);
                 materialEditor.ShaderProperty(rimPower, Styles.rimPower, 2);
+                materialEditor.ShaderProperty(rimIntensity, Styles.rimIntensity, 2);
             }
 
             materialEditor.ShaderProperty(vertexColors, Styles.vertexColors);
@@ -585,6 +592,8 @@ namespace Microsoft.MixedReality.Toolkit.Editor
                 materialEditor.ShaderProperty(borderWidth, Styles.borderWidth, 2);
 
                 materialEditor.ShaderProperty(borderMinValue, Styles.borderMinValue, 2);
+
+                materialEditor.ShaderProperty(borderLightColor, Styles.borderLightColor, 2);
 
                 materialEditor.ShaderProperty(borderLightReplacesAlbedo, Styles.borderLightReplacesAlbedo, 2);
                 
