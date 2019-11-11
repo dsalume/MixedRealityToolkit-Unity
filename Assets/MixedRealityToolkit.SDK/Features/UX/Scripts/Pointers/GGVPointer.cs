@@ -3,6 +3,7 @@
 
 using Microsoft.MixedReality.Toolkit.Physics;
 using Microsoft.MixedReality.Toolkit.Utilities;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -27,10 +28,13 @@ namespace Microsoft.MixedReality.Toolkit.Input
         private MixedRealityInputAction selectAction = MixedRealityInputAction.None;
         [SerializeField]
         private MixedRealityInputAction poseAction = MixedRealityInputAction.None;
+        [SerializeField]
+        private float maxClickDuration = 0.5f;
 
         private GazeProvider gazeProvider;
         private Vector3 sourcePosition;
         private bool isSelectPressed;
+        private DateTime selectPressedTime;
         private Handedness lastControllerHandedness;
 
         #region IMixedRealityPointer
@@ -223,8 +227,12 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         {
                             c.SourceDownIds.Remove(eventData.SourceId);
                         }
-                        InputSystem.RaisePointerClicked(this, selectAction, 0, Controller.ControllerHandedness);
                         InputSystem.RaisePointerUp(this, selectAction, Controller.ControllerHandedness);
+
+                        if ((DateTime.Now - selectPressedTime).TotalSeconds <= maxClickDuration)
+                        {
+                            InputSystem.RaisePointerClicked(this, selectAction, 0, Controller.ControllerHandedness);
+                        }
 
                         // For GGV, the gaze pointer does not set this value itself. 
                         // See comment in OnInputDown for more details.
@@ -242,6 +250,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 if (eventData.MixedRealityInputAction == selectAction)
                 {
                     isSelectPressed = true;
+                    selectPressedTime = DateTime.Now;
                     lastControllerHandedness = Controller.ControllerHandedness;
                     if (IsInteractionEnabled)
                     {

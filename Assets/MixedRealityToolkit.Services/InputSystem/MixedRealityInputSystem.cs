@@ -604,11 +604,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
             if (disabledRefCount == 1)
             {
                 InputDisabled?.Invoke();
-
-                if (GazeProvider != null)
-                {
-                    GazeProvider.Enabled = false;
-                }
             }
         }
 
@@ -624,11 +619,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
             if (disabledRefCount == 0)
             {
                 InputEnabled?.Invoke();
-
-                if (GazeProvider != null)
-                {
-                    GazeProvider.Enabled = true;
-                }
             }
         }
 
@@ -643,11 +633,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
             if (wasInputDisabled)
             {
                 InputEnabled?.Invoke();
-
-                if (GazeProvider != null)
-                {
-                    GazeProvider.Enabled = true;
-                }
             }
         }
 

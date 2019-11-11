@@ -51,3 +51,4 @@ MonoBehaviour:
     id: 3
     description: Grip Pose
     axisConstraint: 7
+  maxClickDuration: 0.5
