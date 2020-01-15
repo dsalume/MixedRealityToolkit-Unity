@@ -253,6 +253,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             public override void OnPostSceneQuery()
             {
+                base.OnPostSceneQuery();
+
                 if (isDown)
                 {
                     InputSystem.RaisePointerDragged(this, MixedRealityInputAction.None, currentHandedness, currentInputSource);

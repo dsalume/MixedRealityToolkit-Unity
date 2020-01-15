@@ -1050,10 +1050,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// </summary>
         private void ReconcilePointers()
         {
-            var gazePointer = gazeProviderPointingData?.Pointer as GenericPointer;
+            var gazePointer = gazeProviderPointingData?.Pointer;
             NumFarPointersActive = 0;
             NumNearPointersActive = 0;
-            int numFarPointersWithoutCursorActive = 0;
 
             foreach (var pointerData in pointers)
             {
@@ -1074,22 +1073,16 @@ namespace Microsoft.MixedReality.Toolkit.Input
                     // hand input or the gamepad, we want to show the cursor still.
                     NumFarPointersActive++;
                 }
-                else if (pointerData.Pointer.BaseCursor == null
-                    && pointerData.Pointer.IsInteractionEnabled)
-                {
-                    numFarPointersWithoutCursorActive++;
-                }
             }
             if (gazePointer != null)
             {
                 gazePointerStateMachine.UpdateState(
                     NumNearPointersActive,
                     NumFarPointersActive,
-                    numFarPointersWithoutCursorActive,
                     InputSystem.EyeGazeProvider.IsEyeGazeValid);
 
                 // The gaze cursor's visibility is controlled by IsInteractionEnabled
-                gazePointer.IsInteractionEnabled = gazePointerStateMachine.IsGazePointerActive;
+                gazePointer.IsActive = gazePointerStateMachine.IsGazePointerActive;
             }
         }
 
@@ -1173,13 +1166,15 @@ namespace Microsoft.MixedReality.Toolkit.Input
                                 // a NearInteractionGrabbable component on it.
                                 // FIXME: This is assuming only the grab pointer is using SceneQueryType.SphereOverlap,
                                 //        but there may be other pointers using the same query type which have different semantics.
-                                if (collider.GetComponent<NearInteractionGrabbable>() == null)
+                                if (collider.GetComponent<INearInteractionGrabbable>() == null)
                                 {
                                     continue;
                                 }
                                 // From https://docs.unity3d.com/ScriptReference/Collider.ClosestPoint.html
                                 // If location is in the collider the closestPoint will be inside.
                                 Vector3 closestPointToCollider = collider.ClosestPoint(testPoint);
+
+                                // TODO: don't use closest point if not a convex mesh collider
                                 float distance = (testPoint - closestPointToCollider).sqrMagnitude;
                                 if (distance < closestDistance)
                                 {
@@ -1342,6 +1337,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
 
             // Now we raise the events:
+            // Raise all the pre focus and focus exit events first.
             for (int iChange = 0; iChange < pendingPointerSpecificFocusChange.Count; iChange++)
             {
                 PointerData change = pendingPointerSpecificFocusChange[iChange];
@@ -1363,6 +1359,14 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         pendingOverallFocusExitSet.Remove(pendingUnfocusObject);
                     }
                 }
+            }
+
+            // Raise the focus enter and focus changed events after.
+            for (int iChange = 0; iChange < pendingPointerSpecificFocusChange.Count; iChange++)
+            {
+                PointerData change = pendingPointerSpecificFocusChange[iChange];
+                GameObject pendingUnfocusObject = change.PreviousPointerTarget;
+                GameObject pendingFocusObject = change.CurrentPointerTarget;
 
                 if (pendingOverallFocusEnterSet.Contains(pendingFocusObject))
                 {

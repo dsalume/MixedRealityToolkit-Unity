@@ -46,10 +46,13 @@ namespace Microsoft.MixedReality.Toolkit.Physics
 
         private readonly float epsilon;
 
-        public Vector3 GetPoint(float distance)
+        public Vector3 GetPoint(float distance, bool unclamped = false)
         {
-            if (Length <= distance || Length == 0f)
+            if (!unclamped &&
+                (Length <= distance || Length == 0f))
+            {
                 return Origin;
+            }
 
             pos.x = Origin.x + Direction.x * distance;
             pos.y = Origin.y + Direction.y * distance;

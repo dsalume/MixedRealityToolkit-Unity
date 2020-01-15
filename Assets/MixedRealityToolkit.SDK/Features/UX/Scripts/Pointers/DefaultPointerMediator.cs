@@ -22,6 +22,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         private IPointerPreferences pointerPreferences;
 
+        private IMixedRealityPointer gazePointer = null;
+
         public DefaultPointerMediator()
             : this(null)
         {
@@ -109,6 +111,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 }
             }
 
+            if (gazePointer == null)
+            {
+                gazePointer = CoreServices.InputSystem.GazeProvider.GazePointer;
+            }
+
             // pointers whose active state has not yet been set this frame
             unassignedPointers.Clear();
             foreach (IMixedRealityPointer unassignedPointer in allPointers)
@@ -185,7 +192,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
             // have no reason to be disabled, so make sure they are active
             foreach (IMixedRealityPointer unassignedPointer in unassignedPointers)
             {
-                unassignedPointer.IsActive = true;
+                // The gaze pointer's value has already been set.
+                if (unassignedPointer != gazePointer)
+                {
+                    unassignedPointer.IsActive = true;
+                }
             }
         }
 
@@ -203,10 +214,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
                         bool isPointerOn = behavior == PointerBehavior.AlwaysOn;
                         ptr.IsActive = isPointerOn;
-                        if (ptr is GenericPointer genericPtr)
-                        {
-                            genericPtr.IsInteractionEnabled = isPointerOn;
-                        }
+                        ptr.IsInteractionEnabled = isPointerOn;
                         unassignedPointers.Remove(ptr);
                     };
 

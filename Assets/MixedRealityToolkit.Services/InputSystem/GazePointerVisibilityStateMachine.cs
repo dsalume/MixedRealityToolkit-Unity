@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// Updates the state machine based on the number of near pointers, the number of far pointers,
         /// and whether or not eye gaze is valid.
         /// </summary>
-        public void UpdateState(int numNearPointersActive, int numFarPointersActive, int numFarPointersWithoutCursorActive, bool isEyeGazeValid)
+        public void UpdateState(int numNearPointersActive, int numFarPointersActive, bool isEyeGazeValid)
         {
             if (eyeGazeValid != isEyeGazeValid)
             {
@@ -57,7 +57,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
             else
             {
-                UpdateStateHeadGaze(numNearPointersActive, numFarPointersActive, numFarPointersWithoutCursorActive);
+                UpdateStateHeadGaze(numNearPointersActive, numFarPointersActive);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 GazePointerState.GazePointerInactive;
         }
 
-        private void UpdateStateHeadGaze(int numNearPointersActive, int numFarPointersActive, int numFarPointersWithoutCursorActive)
+        private void UpdateStateHeadGaze(int numNearPointersActive, int numFarPointersActive)
         {
             bool canGazeCursorShow = numFarPointersActive == 0 && numNearPointersActive == 0;
             switch (gazePointerState)
@@ -94,12 +94,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                     break;
                 case GazePointerState.GazePointerInactive:
                     // Go from inactive to active if we say the word "select"
-                    if (activateGazeKeywordIsSet)
-                    {
-                        activateGazeKeywordIsSet = false;
-                        gazePointerState = GazePointerState.GazePointerActive;
-                    }
-                    if (canGazeCursorShow && numFarPointersWithoutCursorActive > 0)
+                    if (activateGazeKeywordIsSet || canGazeCursorShow)
                     {
                         activateGazeKeywordIsSet = false;
                         gazePointerState = GazePointerState.GazePointerActive;

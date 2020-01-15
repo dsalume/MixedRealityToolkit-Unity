@@ -32,7 +32,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         Trigger,
         TriggerTouch,
         TriggerNearTouch,
-        TriggerPress,
+        Bumper,
         /// <summary>
         /// 6 DoF Grip with position and rotation.
         /// </summary>

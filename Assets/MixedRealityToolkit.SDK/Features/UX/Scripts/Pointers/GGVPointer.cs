@@ -75,6 +75,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         private string pointerName = string.Empty;
+        private bool isInteractionEnabled = true;
 
         /// <inheritdoc />
         public string PointerName
@@ -96,7 +97,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public ICursorModifier CursorModifier { get; set; }
 
-        public bool IsInteractionEnabled => IsActive;
+        public bool IsInteractionEnabled
+        {
+            get => IsActive && isInteractionEnabled;
+            set => isInteractionEnabled = value;
+        }
 
         public bool IsActive { get; set; }
 
@@ -176,6 +181,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public void OnPostSceneQuery()
         {
+            BaseCursor?.SetVisibility(IsInteractionEnabled);
+
             if (isSelectPressed && IsInteractionEnabled)
             {
                 InputSystem.RaisePointerDragged(this, MixedRealityInputAction.None, Controller.ControllerHandedness);

@@ -87,7 +87,7 @@ namespace Microsoft.MixedReality.Toolkit.WindowsMixedReality.Input
                     case DeviceInputType.Select:
                     case DeviceInputType.Trigger:
                     case DeviceInputType.TriggerTouch:
-                    case DeviceInputType.TriggerPress:
+                    case DeviceInputType.Bumper:
                         UpdateTriggerData(interactionSourceState, Interactions[i]);
                         break;
                     case DeviceInputType.SpatialGrip:
@@ -247,7 +247,7 @@ namespace Microsoft.MixedReality.Toolkit.WindowsMixedReality.Input
         {
             switch (interactionMapping.InputType)
             {
-                case DeviceInputType.TriggerPress:
+                case DeviceInputType.Bumper:
                 {
                     // Update the interaction data source
                     interactionMapping.BoolData = interactionSourceState.grasped;

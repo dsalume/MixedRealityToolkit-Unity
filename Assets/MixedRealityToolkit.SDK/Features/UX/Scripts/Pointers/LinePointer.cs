@@ -161,7 +161,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             else
             {
                 clearWorldLength = DefaultPointerExtent;
-                lineColor = IsSelectPressed ? LineColorSelected : LineColorNoTarget;
+                lineColor = IsInputPressed ? LineColorSelected : LineColorNoTarget;
             }
 
             if (IsFocusLocked)

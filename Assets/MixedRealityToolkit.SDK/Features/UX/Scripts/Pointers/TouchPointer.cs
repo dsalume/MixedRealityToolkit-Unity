@@ -12,11 +12,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// </summary>
     public class TouchPointer : BaseControllerPointer, IMixedRealityTouchPointer
     {
-        private bool isInteractionEnabled = false;
-
-        /// <inheritdoc />
-        public override bool IsInteractionEnabled => isInteractionEnabled;
-
         private int fingerId = -1;
 
         /// <inheritdoc />
@@ -81,7 +76,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             if (eventData.InputSource.SourceId == Controller.InputSource.SourceId)
             {
-                isInteractionEnabled = true;
+                IsInteractionEnabled = true;
             }
         }
 
@@ -94,7 +89,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 eventData.Controller != null &&
                 eventData.Controller.InputSource.SourceId == Controller.InputSource.SourceId)
             {
-                isInteractionEnabled = false;
+                IsInteractionEnabled = false;
             }
         }
     }

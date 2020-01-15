@@ -88,7 +88,7 @@ namespace Microsoft.MixedReality.Toolkit.Input.UnityInput
             // Update the interaction data source
             switch (interactionMapping.InputType)
             {
-                case DeviceInputType.TriggerPress:
+                case DeviceInputType.Bumper:
                     interactionMapping.BoolData = UInput.GetAxisRaw(interactionMapping.AxisCodeX).Equals(1);
                     break;
                 case DeviceInputType.TriggerNearTouch:
@@ -131,7 +131,7 @@ namespace Microsoft.MixedReality.Toolkit.Input.UnityInput
 
             var singleAxisValue = UInput.GetAxisRaw(interactionMapping.AxisCodeX);
 
-            if (interactionMapping.InputType == DeviceInputType.TriggerPress)
+            if (interactionMapping.InputType == DeviceInputType.Bumper)
             {
                 interactionMapping.BoolData = singleAxisValue.Equals(1);
 

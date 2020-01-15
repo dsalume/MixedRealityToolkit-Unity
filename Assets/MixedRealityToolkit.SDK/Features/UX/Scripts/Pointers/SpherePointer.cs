@@ -230,7 +230,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             /// <summary>
             /// The grabbable near the QueryRadius. 
             /// </summary>
-            private NearInteractionGrabbable grabbable;
+            private INearInteractionGrabbable grabbable;
 
             public SpherePointerQueryInfo(int bufferSize, float radius)
             {
@@ -256,7 +256,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
                 for (int i = 0; i < numColliders; i++)
                 {
-                    if (grabbable = queryBuffer[i].GetComponent<NearInteractionGrabbable>())
+                    grabbable = queryBuffer[i].GetComponent<INearInteractionGrabbable>();
+                    if (grabbable != null)
                     {
                         return true;
                     }

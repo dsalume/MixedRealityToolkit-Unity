@@ -50,7 +50,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             BaseMixedRealityLineRenderer lineToShow = lineRendererNoTarget;
 
             // Make the line solid when pressed
-            if (IsSelectPressed)
+            if (IsInputPressed)
             {
                 lineToShow = lineRendererSelected;
             }

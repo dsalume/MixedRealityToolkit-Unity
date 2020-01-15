@@ -15,7 +15,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         private Vector3 currentPointerPosition = Vector3.zero;
         private Quaternion currentPointerRotation = Quaternion.identity;
-        private MixedRealityPose lastPointerPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose currentPointerPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose currentIndexPose = MixedRealityPose.ZeroIdentity;
         private MixedRealityPose currentGripPose = MixedRealityPose.ZeroIdentity;
@@ -38,7 +37,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             new MixedRealityInteractionMapping(0, "Spatial Pointer", AxisType.SixDof, DeviceInputType.SpatialPointer, MixedRealityInputAction.None),
             new MixedRealityInteractionMapping(1, "Spatial Grip", AxisType.SixDof, DeviceInputType.SpatialGrip, MixedRealityInputAction.None),
             new MixedRealityInteractionMapping(2, "Select", AxisType.Digital, DeviceInputType.Select, MixedRealityInputAction.None),
-            new MixedRealityInteractionMapping(3, "Grab", AxisType.SingleAxis, DeviceInputType.TriggerPress, MixedRealityInputAction.None),
+            new MixedRealityInteractionMapping(3, "Grab", AxisType.SingleAxis, DeviceInputType.Bumper, MixedRealityInputAction.None),
             new MixedRealityInteractionMapping(4, "Index Finger Pose", AxisType.SixDof, DeviceInputType.IndexFinger, MixedRealityInputAction.None),
         };
 
@@ -51,12 +50,13 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         protected override void UpdateInteractions(SimulatedHandData handData)
         {
-            lastPointerPose = currentPointerPose;
-            lastGripPose = currentGripPose;
+            base.UpdateInteractions(handData);
 
+            lastGripPose = currentGripPose;
+            
             // For convenience of simulating in Unity Editor, make the ray use the index
             // finger position instead of knuckle, since the index finger doesn't move when we press.
-            Vector3 pointerPosition = jointPoses[TrackedHandJoint.IndexTip].Position;
+            Vector3 pointerPosition = currentPosition;
             IsPositionAvailable = IsRotationAvailable = pointerPosition != Vector3.zero;
 
             if (IsPositionAvailable)
@@ -108,21 +108,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         }
                         break;
                     case DeviceInputType.Select:
-                        Interactions[i].BoolData = handData.IsPinching;
-
-                        if (Interactions[i].Changed)
-                        {
-                            if (Interactions[i].BoolData)
-                            {
-                                InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction);
-                            }
-                            else
-                            {
-                                InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction);
-                            }
-                        }
+                        // Handled by the base class.
                         break;
-                    case DeviceInputType.TriggerPress:
+                    case DeviceInputType.Bumper:
                         Interactions[i].BoolData = handData.IsPinching;
 
                         if (Interactions[i].Changed)

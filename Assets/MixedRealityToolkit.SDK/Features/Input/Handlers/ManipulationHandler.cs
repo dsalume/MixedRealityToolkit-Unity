@@ -502,14 +502,9 @@ namespace Microsoft.MixedReality.Toolkit.UI
             return pointerIdToPointerMap[pointerId].GrabPoint;
         }
 
-        #endregion Public Methods
-
-        #region Hand Event Handlers
-
-        /// <inheritdoc />
-        public void OnPointerDown(MixedRealityPointerEventData eventData)
+        public void BeginInteraction(BaseInputEventData eventData, IMixedRealityPointer pointer)
         {
-            if (!allowFarManipulation && eventData.Pointer as IMixedRealityNearPointer == null)
+            if (!allowFarManipulation && pointer as IMixedRealityNearPointer == null)
             {
                 return;
             }
@@ -517,10 +512,10 @@ namespace Microsoft.MixedReality.Toolkit.UI
             // If we only allow one handed manipulations, check there is no hand interacting yet. 
             if (manipulationType != HandMovementType.OneHandedOnly || pointerIdToPointerMap.Count == 0)
             {
-                uint id = eventData.Pointer.PointerId;
+                uint id = pointer.PointerId;
                 // Ignore poke pointer events
                 if (!eventData.used
-                    && !pointerIdToPointerMap.ContainsKey(eventData.Pointer.PointerId))
+                    && !pointerIdToPointerMap.ContainsKey(pointer.PointerId))
                 {
                     if (pointerIdToPointerMap.Count == 0)
                     {
@@ -533,8 +528,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
                     }
 
                     // cache start ptr grab point
-                    Vector3 initialGrabPoint = Quaternion.Inverse(eventData.Pointer.Rotation) * (eventData.Pointer.Result.Details.Point - eventData.Pointer.Position);
-                    pointerIdToPointerMap.Add(id, new PointerData(eventData.Pointer, initialGrabPoint));
+                    Vector3 initialGrabPoint = Quaternion.Inverse(pointer.Rotation) * (pointer.Result.Details.Point - pointer.Position);
+                    pointerIdToPointerMap.Add(id, new PointerData(pointer, initialGrabPoint));
 
                     UpdateStateMachine();
                 }
@@ -547,6 +542,16 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 // This is due to us reacting to both "Select" and "Grip" events.
                 eventData.Use();
             }
+        }
+
+        #endregion Public Methods
+
+        #region Hand Event Handlers
+
+        /// <inheritdoc />
+        public void OnPointerDown(MixedRealityPointerEventData eventData)
+        {
+            BeginInteraction(eventData, eventData.Pointer);
         }
 
         public void OnPointerDragged(MixedRealityPointerEventData eventData)

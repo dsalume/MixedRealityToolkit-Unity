@@ -244,7 +244,7 @@ namespace Microsoft.MixedReality.Toolkit.Teleport
         /// <inheritdoc />
         public override void OnPostSceneQuery()
         {
-            if (IsSelectPressed)
+            if (IsInputPressed)
             {
                 InputSystem.RaisePointerDragged(this, MixedRealityInputAction.None, Handedness);
             }

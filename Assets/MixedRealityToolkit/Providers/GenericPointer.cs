@@ -90,10 +90,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
             set
             {
                 isInteractionEnabled = value;
-                if (BaseCursor != null)
-                {
-                    BaseCursor.SetVisibility(value);
-                }
             }
         }
 
@@ -143,7 +139,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
         public abstract void OnPreSceneQuery();
 
         /// <inheritdoc />
-        public abstract void OnPostSceneQuery();
+        public virtual void OnPostSceneQuery()
+        {
+            BaseCursor?.SetVisibility(IsInteractionEnabled);
+        }
 
         /// <inheritdoc />
         public abstract void OnPreCurrentPointerTargetChange();

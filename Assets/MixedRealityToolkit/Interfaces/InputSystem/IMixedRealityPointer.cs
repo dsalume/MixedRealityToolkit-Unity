@@ -45,7 +45,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <summary>
         /// Is the pointer active and have the conditions for the interaction been satisfied to enable the interaction?
         /// </summary>
-        bool IsInteractionEnabled { get; }
+        bool IsInteractionEnabled { get; set; }
 
         /// <summary>
         /// Controls whether the pointer dispatches input..

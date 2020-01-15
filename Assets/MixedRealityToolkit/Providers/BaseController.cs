@@ -104,12 +104,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             if (IsControllerMappingEnabled())
             {
-                if (GetControllerVisualizationProfile() != null &&
-                    GetControllerVisualizationProfile().RenderMotionControllers)
-                {
-                    TryRenderControllerModel(controllerType, inputSourceType);
-                }
-
                 // We can only enable controller profiles if mappings exist.
                 var controllerMappings = GetControllerMappings();
 
@@ -160,6 +154,12 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 {
                     Debug.LogWarning($"No controller profile found for type {controllerType}, please ensure all controllers are defined in the configured MixedRealityControllerConfigurationProfile.");
                     return false;
+                }
+
+                if (GetControllerVisualizationProfile() != null &&
+                    GetControllerVisualizationProfile().RenderMotionControllers)
+                {
+                    TryRenderControllerModel(controllerType, inputSourceType);
                 }
             }
 

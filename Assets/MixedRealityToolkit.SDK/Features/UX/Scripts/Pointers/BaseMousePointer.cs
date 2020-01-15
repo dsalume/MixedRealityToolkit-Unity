@@ -13,8 +13,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     {
         protected float timeoutTimer = 0.0f;
 
-        private bool isInteractionEnabled = false;
-
         private bool cursorWasDisabledOnDown = false;
 
         protected bool isDisabled = true;
@@ -53,9 +51,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
         #endregion IMixedRealityMousePointer Implementation
 
         #region IMixedRealityPointer Implementation
-
-        /// <inheritdoc />
-        public override bool IsInteractionEnabled => isInteractionEnabled;
 
         protected abstract string ControllerName { get; }
 
@@ -99,7 +94,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             if (eventData.SourceId == Controller?.InputSource.SourceId)
             {
-                isInteractionEnabled = true;
+                IsInteractionEnabled = true;
             }
         }
 
@@ -111,7 +106,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             if (eventData.SourceId == Controller?.InputSource.SourceId)
             {
-                isInteractionEnabled = false;
+                IsInteractionEnabled = false;
             }
         }
 
@@ -173,7 +168,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             {
                 if (inputSource.SourceId == Controller.InputSource.SourceId)
                 {
-                    isInteractionEnabled = true;
+                    IsInteractionEnabled = true;
                     break;
                 }
             }

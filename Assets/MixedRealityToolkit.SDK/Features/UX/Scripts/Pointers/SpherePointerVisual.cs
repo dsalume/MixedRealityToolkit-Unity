@@ -79,7 +79,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             TetherVisualsEnabled = false;
             if (pointer.IsFocusLocked && pointer.IsTargetPositionLockedOnFocusLock && pointer.Result != null)
             {
-                NearInteractionGrabbable grabbedObject = GetGrabbedObject();
+                INearInteractionGrabbable grabbedObject = GetGrabbedObject();
                 if (grabbedObject != null && grabbedObject.ShowTetherWhenManipulating)
                 {
                     Vector3 graspPosition;
@@ -97,11 +97,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
             visualsRoot.gameObject.SetActive(TetherVisualsEnabled);
         }
 
-        private NearInteractionGrabbable GetGrabbedObject()
+        private INearInteractionGrabbable GetGrabbedObject()
         {
             if (pointer.Result?.Details.Object != null)
             {
-                return pointer.Result.Details.Object.GetComponent<NearInteractionGrabbable>();
+                return pointer.Result.Details.Object.GetComponent<INearInteractionGrabbable>();
             }
             else
             {
