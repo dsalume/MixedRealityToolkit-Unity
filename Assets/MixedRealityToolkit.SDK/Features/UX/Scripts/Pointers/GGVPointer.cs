@@ -235,11 +235,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         {
                             c.SourceDownIds.Remove(eventData.SourceId);
                         }
-                        InputSystem.RaisePointerUp(this, selectAction, Controller.ControllerHandedness);
+                        CoreServices.InputSystem.RaisePointerUp(this, selectAction, Controller.ControllerHandedness);
 
                         if ((DateTime.Now - selectPressedTime).TotalSeconds <= maxClickDuration)
                         {
-                            InputSystem.RaisePointerClicked(this, selectAction, 0, Controller.ControllerHandedness);
+                            CoreServices.InputSystem.RaisePointerClicked(this, selectAction, 0, Controller.ControllerHandedness);
                         }
 
                         // For GGV, the gaze pointer does not set this value itself. 

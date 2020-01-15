@@ -43,7 +43,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// Updates the state machine based on the number of near pointers, the number of far pointers,
         /// and whether or not eye gaze is valid.
         /// </summary>
-        public void UpdateState(int numNearPointersActive, int numFarPointersActive, bool isEyeGazeValid)
+        public void UpdateState(int numNearPointersActive, int numFarPointersActive, int numFarPointersWithoutCursorActive, bool isEyeGazeValid)
         {
             if (eyeGazeValid != isEyeGazeValid)
             {
@@ -57,7 +57,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
             else
             {
-                UpdateStateHeadGaze(numNearPointersActive, numFarPointersActive);
+                UpdateStateHeadGaze(numNearPointersActive, numFarPointersActive, numFarPointersWithoutCursorActive);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 GazePointerState.GazePointerInactive;
         }
 
-        private void UpdateStateHeadGaze(int numNearPointersActive, int numFarPointersActive)
+        private void UpdateStateHeadGaze(int numNearPointersActive, int numFarPointersActive, int numFarPointersWithoutCursorActive)
         {
             bool canGazeCursorShow = numFarPointersActive == 0 && numNearPointersActive == 0;
             switch (gazePointerState)

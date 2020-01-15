@@ -1052,6 +1052,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             var gazePointer = gazeProviderPointingData?.Pointer;
             NumFarPointersActive = 0;
             NumNearPointersActive = 0;
+            int numFarPointersWithoutCursorActive = 0;
 
             foreach (var pointerData in pointers)
             {
@@ -1072,12 +1073,18 @@ namespace Microsoft.MixedReality.Toolkit.Input
                     // hand input or the gamepad, we want to show the cursor still.
                     NumFarPointersActive++;
                 }
+                else if (pointerData.Pointer.BaseCursor == null
+                    && pointerData.Pointer.IsInteractionEnabled)
+                {
+                    numFarPointersWithoutCursorActive++;
+                }
             }
             if (gazePointer != null)
             {
                 gazePointerStateMachine.UpdateState(
                     NumNearPointersActive,
                     NumFarPointersActive,
+                    numFarPointersWithoutCursorActive,
                     CoreServices.InputSystem.EyeGazeProvider.IsEyeGazeValid);
 
                 // The gaze cursor's visibility is controlled by IsInteractionEnabled
