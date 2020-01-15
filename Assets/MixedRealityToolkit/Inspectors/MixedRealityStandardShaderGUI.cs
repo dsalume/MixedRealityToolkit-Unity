@@ -409,7 +409,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             {
                 EditorGUI.indentLevel += 2;
                 materialEditor.TexturePropertySingleLine(Styles.channelMap, channelMap);
-                GUILayout.Box("Metallic (Red), Occlusion (Green), Emission (Blue), Smoothness (Alpha)", EditorStyles.helpBox, new GUILayoutOption[0]);
+                GUILayout.Box("Metallic (Red), Occlusion (Green), Emission (Blue), Smoothness (Alpha)", EditorStyles.helpBox, Array.Empty<GUILayoutOption>());
                 EditorGUI.indentLevel -= 2;
             }
 
@@ -523,7 +523,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
                 (RenderingMode)renderingMode.floatValue != RenderingMode.Cutout)
             {
                 materialEditor.ShaderProperty(blendedClippingWidth, Styles.blendedClippingWidth);
-                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(ClippingPrimitive), "other clipping"), EditorStyles.helpBox, new GUILayoutOption[0]);
+                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(ClippingPrimitive), "other clipping"), EditorStyles.helpBox, Array.Empty<GUILayoutOption>());
             }
 
             materialEditor.ShaderProperty(clippingBorder, Styles.clippingBorder);
@@ -532,7 +532,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             {
                 materialEditor.ShaderProperty(clippingBorderWidth, Styles.clippingBorderWidth, 2);
                 materialEditor.ShaderProperty(clippingBorderColor, Styles.clippingBorderColor, 2);
-                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(ClippingPrimitive), "other clipping"), EditorStyles.helpBox, new GUILayoutOption[0]);
+                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(ClippingPrimitive), "other clipping"), EditorStyles.helpBox, Array.Empty<GUILayoutOption>());
             }
 
             materialEditor.ShaderProperty(nearPlaneFade, Styles.nearPlaneFade);
@@ -557,7 +557,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
 
             if (PropertyEnabled(hoverLight))
             {
-                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(HoverLight), Styles.hoverLight.text), EditorStyles.helpBox, new GUILayoutOption[0]);
+                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(HoverLight), Styles.hoverLight.text), EditorStyles.helpBox, Array.Empty<GUILayoutOption>());
 
                 materialEditor.ShaderProperty(enableHoverColorOverride, Styles.enableHoverColorOverride, 2);
 
@@ -582,7 +582,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
 
                 materialEditor.ShaderProperty(proximityLightSubtractive, Styles.proximityLightSubtractive, 2);
                 materialEditor.ShaderProperty(proximityLightTwoSided, Styles.proximityLightTwoSided, 2);
-                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(ProximityLight), Styles.proximityLight.text), EditorStyles.helpBox, new GUILayoutOption[0]);
+                GUILayout.Box(string.Format(Styles.propertiesComponentHelp, nameof(ProximityLight), Styles.proximityLight.text), EditorStyles.helpBox, Array.Empty<GUILayoutOption>());
             }
 
             materialEditor.ShaderProperty(borderLight, Styles.borderLight);

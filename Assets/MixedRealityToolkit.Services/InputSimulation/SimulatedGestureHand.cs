@@ -39,11 +39,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
         };
 
         /// <inheritdoc />
-        public override void SetupDefaultInteractions(Handedness controllerHandedness)
-        {
-            AssignControllerMappings(DefaultInteractions);
-        }
-
         protected override void UpdateInteractions(SimulatedHandData handData)
         {
             Vector3 lastPosition = currentPosition;
@@ -54,7 +49,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
             if (lastPosition != currentPosition)
             {
-                InputSystem?.RaiseSourcePositionChanged(InputSource, this, currentPosition);
+                CoreServices.InputSystem?.RaiseSourcePositionChanged(InputSource, this, currentPosition);
             }
 
             for (int i = 0; i < Interactions?.Length; i++)
@@ -65,7 +60,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         Interactions[i].PoseData = currentGripPose;
                         if (Interactions[i].Changed)
                         {
-                            InputSystem?.RaisePoseInputChanged(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction, currentGripPose);
+                            CoreServices.InputSystem?.RaisePoseInputChanged(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction, currentGripPose);
                         }
                         break;
                     case DeviceInputType.Select:

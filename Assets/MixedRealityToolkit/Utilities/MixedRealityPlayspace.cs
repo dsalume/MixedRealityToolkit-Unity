@@ -51,6 +51,12 @@ namespace Microsoft.MixedReality.Toolkit
 
                 mixedRealityPlayspace = mixedRealityPlayspaceGo.transform;
 
+                Camera mainCamera = CameraCache.Main;
+                if (mainCamera != null)
+                {
+                    mainCamera.transform.SetParent(mixedRealityPlayspace);
+                }
+
                 // It's very important that the Playspace align with the tracked space,
                 // otherwise reality-locked things like playspace boundaries won't be aligned properly.
                 // For now, we'll just assume that when the playspace is first initialized, the
